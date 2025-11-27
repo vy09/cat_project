@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cat_project/Widgets/Exam/exam_header_widget.dart';
 import 'package:cat_project/Widgets/Exam/exam_question_widget.dart';
 import 'package:cat_project/Widgets/Exam/exam_navigation_widget.dart';
+import 'package:cat_project/Widgets/Exam/exam_navigation_drawer.dart';
 
 class ExamPage extends StatefulWidget {
   final String examTitle;
@@ -23,20 +24,27 @@ class _ExamPageState extends State<ExamPage> {
   final Map<int, String> _answers = {};
 
   // Sample questions - should come from backend
-  final List<Map<String, dynamic>> _questions = [
-    {
-      'number': 1,
-      'text':
-          'Seorang radiografer melakukan pemeriksaan radiografi abdomen. Ketika berkas primer sinar-X berinteraksi dengan jaringan tubuh, terjadi beberapa proses selama attenuasi berkas sinar-X. Citra radiografi abdomen menunjukkan densitas rendah.\n\nApakah proses yang terjadi selama attenuasi sinar-X pada citra radiografi tersebut?',
-      'options': [
-        'A. Absorsi foton-foton datang sinar-X',
-        'B. Refraksi foton-foton datang sinar-X',
-        'C. Refleksi foton-foton datang sinar-X',
-        'D. Scatter foton-foton datang sinar-X',
-        'E. Transmisi foton-foton datang sinar-X',
-      ],
-    },
-  ];
+  late final List<Map<String, dynamic>> _questions;
+
+  @override
+  void initState() {
+    super.initState();
+    _questions = List.generate(
+      30,
+      (index) => {
+        'number': index + 1,
+        'text':
+            'Seorang radiografer melakukan pemeriksaan radiografi abdomen. Ketika berkas primer sinar-X berinteraksi dengan jaringan tubuh, terjadi beberapa proses selama attenuasi berkas sinar-X. Citra radiografi abdomen menunjukkan densitas rendah.\n\nApakah proses yang terjadi selama attenuasi sinar-X pada citra radiografi tersebut?',
+        'options': [
+          'A. Absorsi foton-foton datang sinar-X',
+          'B. Refraksi foton-foton datang sinar-X',
+          'C. Refleksi foton-foton datang sinar-X',
+          'D. Scatter foton-foton datang sinar-X',
+          'E. Transmisi foton-foton datang sinar-X',
+        ],
+      },
+    );
+  }
 
   void _selectAnswer(String answer) {
     setState(() {
@@ -87,47 +95,68 @@ class _ExamPageState extends State<ExamPage> {
     _nextQuestion();
   }
 
+  void _goToQuestion(int index) {
+    setState(() {
+      _currentQuestionIndex = index;
+      _selectedAnswer = _answers[_currentQuestionIndex];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentQuestion = _questions[_currentQuestionIndex];
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      endDrawer: ExamNavigationDrawer(
+        totalQuestions: _questions.length,
+        currentQuestionIndex: _currentQuestionIndex,
+        answers: _answers,
+        onQuestionSelected: _goToQuestion,
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            ExamHeaderWidget(
-              examTitle: widget.examTitle,
-              examSubtitle: widget.examSubtitle,
-              remainingTime: const Duration(hours: 1, minutes: 59, seconds: 59),
-              onMenuPressed: () {
-                // Show menu options
-              },
-            ),
-
-            // Question Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: ExamQuestionWidget(
-                  questionNumber: currentQuestion['number'],
-                  questionText: currentQuestion['text'],
-                  options: List<String>.from(currentQuestion['options']),
-                  selectedAnswer: _selectedAnswer,
-                  onAnswerSelected: _selectAnswer,
+        child: Builder(
+          builder: (BuildContext context) {
+            return Column(
+              children: [
+                // Header
+                ExamHeaderWidget(
+                  examTitle: widget.examTitle,
+                  examSubtitle: widget.examSubtitle,
+                  remainingTime: const Duration(
+                    hours: 1,
+                    minutes: 59,
+                    seconds: 59,
+                  ),
+                  onMenuPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
                 ),
-              ),
-            ),
 
-            // Navigation Buttons
-            ExamNavigationWidget(
-              onSaveAndContinue: _saveAndContinue,
-              onSkip: _skip,
-              canGoBack: _currentQuestionIndex > 0,
-              onGoBack: _previousQuestion,
-            ),
-          ],
+                // Question Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: ExamQuestionWidget(
+                      questionNumber: currentQuestion['number'],
+                      questionText: currentQuestion['text'],
+                      options: List<String>.from(currentQuestion['options']),
+                      selectedAnswer: _selectedAnswer,
+                      onAnswerSelected: _selectAnswer,
+                    ),
+                  ),
+                ),
+
+                // Navigation Buttons
+                ExamNavigationWidget(
+                  onSaveAndContinue: _saveAndContinue,
+                  onSkip: _skip,
+                  canGoBack: _currentQuestionIndex > 0,
+                  onGoBack: _previousQuestion,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
