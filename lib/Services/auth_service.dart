@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cat_project/Page/Dashboard/dashboard_screen.dart';
 
 class AuthService {
   /// Handle user login
@@ -28,20 +29,12 @@ class AuthService {
     }
 
     // TODO: Implement actual login logic here
-    // For now, just show a success message
+    // For now, just navigate to dashboard
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login berhasil! Email: $email'),
-          backgroundColor: Colors.green,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
       );
-
-      // Navigate to home screen
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => HomeScreen()),
-      // );
     }
   }
 

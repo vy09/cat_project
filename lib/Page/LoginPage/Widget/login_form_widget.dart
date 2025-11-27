@@ -25,7 +25,7 @@ class LoginFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -78,7 +78,7 @@ class LoginFormWidget extends StatelessWidget {
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 14,
+                  vertical: 10,
                 ),
               ),
               validator: (value) {
@@ -115,7 +115,7 @@ class LoginFormWidget extends StatelessWidget {
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 14,
+                  vertical: 10,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -158,9 +158,9 @@ class LoginFormWidget extends StatelessWidget {
                 onPressed: onLogin,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: const Text(

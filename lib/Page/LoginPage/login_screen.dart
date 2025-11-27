@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  padding: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(8),
                   child: Image.asset(
                     'assets/images/logo_bapeten.png',
                     fit: BoxFit.contain,
@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   'UJIAN BERBASIS KOMPUTER',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   'PETUGAS BIDANG KETENAGA NUKLIRAN',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 40),
                 // Login Form Card
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 14,
+                              vertical: 10,
                             ),
                           ),
                           validator: (value) {
@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 14,
+                              vertical: 10,
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
