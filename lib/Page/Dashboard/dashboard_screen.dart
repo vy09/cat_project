@@ -3,6 +3,9 @@ import 'package:cat_project/Services/dashboard_service.dart';
 import 'package:cat_project/Models/exam_model.dart';
 import 'package:cat_project/Page/Dashboard/Widget/exam_count_card.dart';
 import 'package:cat_project/Page/Dashboard/Widget/exam_card.dart';
+import 'package:cat_project/Page/Dashboard/Widget/profile_menu_widget.dart';
+import 'package:cat_project/Page/LoginPage/Login_Screen.dart';
+import 'package:cat_project/Page/Exam/exam_commitment_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -37,17 +40,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 16,
-              child: Icon(Icons.person, color: Color(0xFF6B7FED), size: 20),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ProfileMenuWidget(
+              userName: 'Fauzan',
+              onLogout: _handleLogout,
             ),
-            onPressed: () {
-              // Handle profile tap
-            },
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: SingleChildScrollView(
@@ -99,12 +98,84 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _startExam(ExamModel exam) {
-    // TODO: Navigate to exam screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Memulai ujian: ${exam.title}'),
-        backgroundColor: const Color(0xFF6B7FED),
-      ),
+    // Show commitment dialog before starting exam
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return ExamCommitmentDialog(
+          onAccept: () {
+            // TODO: Navigate to exam screen
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Memulai ujian: ${exam.title}'),
+                backgroundColor: const Color(0xFF6B7FED),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _handleLogout() {
+    // Show confirmation dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: const Text(
+            'Keluar',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: const Text(
+            'Apakah Anda yakin ingin keluar?',
+            style: TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text(
+                'Batal',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                // Navigate back to login screen
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Keluar',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
