@@ -6,6 +6,7 @@ import 'package:cat_project/Widgets/Dashboard/exam_card.dart';
 import 'package:cat_project/Widgets/Dashboard/profile_menu_widget.dart';
 import 'package:cat_project/Page/LoginPage/Login_Screen.dart';
 import 'package:cat_project/Widgets/Exam/exam_commitment_dialog.dart';
+import 'package:cat_project/Page/Exam/exam_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -105,11 +106,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       builder: (BuildContext context) {
         return ExamCommitmentDialog(
           onAccept: () {
-            // TODO: Navigate to exam screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Memulai ujian: ${exam.title}'),
-                backgroundColor: const Color(0xFF6B7FED),
+            // Navigate to exam screen
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ExamPage(
+                  examTitle: 'UJIAN - PILIHAN GANDA',
+                  examSubtitle: exam.title,
+                ),
               ),
             );
           },
