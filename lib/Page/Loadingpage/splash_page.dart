@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cat_project/Services/splash_service.dart';
-import 'package:cat_project/Page/Loadingpage/Widgets/splash_logo_widget.dart';
-import 'package:cat_project/Page/Loadingpage/Widgets/loading_indicator_widget.dart';
+import 'package:cat_project/Widgets/Loadingpage/splash_logo_widget.dart';
+import 'package:cat_project/Widgets/Loadingpage/loading_indicator_widget.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
