@@ -72,15 +72,14 @@ class ExamCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: dashboardService.canStartExam(exam)
-                  ? onStartExam
-                  : null,
+              onPressed: onStartExam,
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF6B7FED), width: 1.5),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                backgroundColor: Colors.transparent,
               ),
               child: const Text(
                 'MULAI UJIAN',

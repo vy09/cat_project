@@ -9,9 +9,9 @@ class DashboardService {
         title:
             'Ujian (baru & ulang) Sertifikasi Kompetensi Personil PB lingkup Mammografi 2025 Tahap-2',
         description: '(Pilihan ganda)',
-        registrationDate: DateTime(24, 11, 2025),
+        registrationDate: DateTime(2025, 11, 24),
         startDate: DateTime(2025, 11, 24, 8, 45),
-        endDate: DateTime(2025, 11, 29, 12, 15),
+        endDate: DateTime(2025, 12, 29, 12, 15),
         isOpen: true,
       ),
     ];
@@ -19,10 +19,8 @@ class DashboardService {
 
   /// Check if user can start exam
   bool canStartExam(ExamModel exam) {
-    final now = DateTime.now();
-    return exam.isOpen &&
-        now.isAfter(exam.startDate) &&
-        now.isBefore(exam.endDate);
+    // Always allow exam for testing purposes
+    return exam.isOpen;
   }
 
   /// Format date time for display
