@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Services/auth_service.dart';
+import 'package:cat_project/core/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   padding: const EdgeInsets.all(8),
                   child: Image.asset(
-                    'assets/images/logo_bapeten.png',
+                    'assets/images/logo/logo_bapeten.png',
                     fit: BoxFit.contain,
                   ),
                 ),

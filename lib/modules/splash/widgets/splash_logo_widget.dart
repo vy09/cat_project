@@ -9,7 +9,7 @@ class SplashLogoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/images/logo_bapeten.png',
+      'assets/images/logo/logo_bapeten.png',
       width: width,
       height: height,
       fit: BoxFit.contain,

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Services/splash_service.dart';
-import 'package:cat_project/Widgets/Loadingpage/splash_logo_widget.dart';
-import 'package:cat_project/Widgets/Loadingpage/loading_indicator_widget.dart';
+import 'package:cat_project/core/services/splash_service.dart';
+import 'package:cat_project/modules/splash/widgets/splash_logo_widget.dart';
+import 'package:cat_project/modules/splash/widgets/loading_indicator_widget.dart';
 
-class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashPageState extends State<SplashPage>
+class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;

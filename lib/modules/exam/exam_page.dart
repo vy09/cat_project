@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Widgets/Exam/exam_header_widget.dart';
-import 'package:cat_project/Widgets/Exam/exam_question_widget.dart';
-import 'package:cat_project/Widgets/Exam/exam_navigation_widget.dart';
-import 'package:cat_project/Widgets/Exam/exam_navigation_drawer.dart';
+import 'package:cat_project/modules/exam/widgets/exam_header_widget.dart';
+import 'package:cat_project/modules/exam/widgets/exam_question_widget.dart';
+import 'package:cat_project/modules/exam/widgets/exam_navigation_widget.dart';
+import 'package:cat_project/modules/exam/widgets/exam_navigation_drawer.dart';
 
 class ExamPage extends StatefulWidget {
   final String examTitle;

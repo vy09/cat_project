@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Models/exam_model.dart';
-import 'package:cat_project/Services/dashboard_service.dart';
+import 'package:cat_project/data/models/exam_model.dart';
+import 'package:cat_project/core/services/dashboard_service.dart';
 
 class ExamCard extends StatelessWidget {
   final ExamModel exam;

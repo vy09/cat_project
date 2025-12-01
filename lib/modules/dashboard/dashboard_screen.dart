@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Services/dashboard_service.dart';
-import 'package:cat_project/Models/exam_model.dart';
-import 'package:cat_project/Widgets/Dashboard/exam_count_card.dart';
-import 'package:cat_project/Widgets/Dashboard/exam_card.dart';
-import 'package:cat_project/Widgets/Dashboard/profile_menu_widget.dart';
-import 'package:cat_project/Screens/LoginPage/Login_Screen.dart';
-import 'package:cat_project/Widgets/Exam/exam_commitment_dialog.dart';
-import 'package:cat_project/Screens/Exam/exam_page.dart';
+import 'package:cat_project/core/services/dashboard_service.dart';
+import 'package:cat_project/data/models/exam_model.dart';
+import 'package:cat_project/modules/dashboard/widgets/exam_count_card.dart';
+import 'package:cat_project/modules/dashboard/widgets/exam_card.dart';
+import 'package:cat_project/modules/dashboard/widgets/profile_menu_widget.dart';
+import 'package:cat_project/modules/auth/login/login_screen.dart';
+import 'package:cat_project/modules/exam/widgets/exam_commitment_dialog.dart';
+import 'package:cat_project/modules/exam/exam_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

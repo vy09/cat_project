@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Screens/LoginPage/login_screen.dart';
+import 'package:cat_project/modules/auth/login/login_screen.dart';
 
 class SplashService {
   static const Duration splashDuration = Duration(seconds: 3);

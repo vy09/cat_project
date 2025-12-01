@@ -1,4 +1,4 @@
-import 'package:cat_project/Models/exam_model.dart';
+import 'package:cat_project/data/models/exam_model.dart';
 
 class DashboardService {
   /// Get list of available exams
@@ -9,7 +9,7 @@ class DashboardService {
         title:
             'Ujian (baru & ulang) Sertifikasi Kompetensi Personil PB lingkup Mammografi 2025 Tahap-2',
         description: '(Pilihan ganda)',
-        registrationDate: DateTime(24,11,2025),
+        registrationDate: DateTime(24, 11, 2025),
         startDate: DateTime(2025, 11, 24, 8, 45),
         endDate: DateTime(2025, 11, 29, 12, 15),
         isOpen: true,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cat_project/Screens/Dashboard/dashboard_screen.dart';
+import 'package:cat_project/modules/dashboard/dashboard_screen.dart';
 
 class AuthService {
   /// Handle user login
