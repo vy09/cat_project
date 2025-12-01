@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cat_project/core/services/auth_service.dart';
+import 'package:cat_project/core/services/captcha_service.dart';
+import 'package:cat_project/modules/auth/login/widgets/captcha_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,8 +15,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
+  final _captchaService = CaptchaService();
   bool _rememberMe = false;
   bool _isPasswordVisible = false;
+  bool _isCaptchaValid = false;
 
   @override
   void dispose() {
@@ -24,14 +28,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _isCaptchaValid) {
       _authService.login(
         context,
         _emailController.text,
         _passwordController.text,
         _rememberMe,
       );
+      // Reset captcha after successful login attempt
+      _captchaService.resetCaptcha();
+    } else if (!_isCaptchaValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silakan lengkapi verifikasi captcha'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
+  }
+
+  void _onCaptchaValidationChanged(bool isValid) {
+    setState(() {
+      _isCaptchaValid = isValid;
+    });
+  }
+
+  void _onCaptchaRefresh() {
+    setState(() {
+      _isCaptchaValid = false;
+    });
   }
 
   @override
@@ -202,7 +227,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
+                        // Captcha Widget
+                        CaptchaWidget(
+                          onValidationChanged: _onCaptchaValidationChanged,
+                          onRefresh: _onCaptchaRefresh,
+                        ),
+                        const SizedBox(height: 16),
                         // Remember Me Checkbox
                         Row(
                           children: [
