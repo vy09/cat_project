@@ -4,9 +4,9 @@ import 'package:cat_project/Models/exam_model.dart';
 import 'package:cat_project/Widgets/Dashboard/exam_count_card.dart';
 import 'package:cat_project/Widgets/Dashboard/exam_card.dart';
 import 'package:cat_project/Widgets/Dashboard/profile_menu_widget.dart';
-import 'package:cat_project/Page/LoginPage/Login_Screen.dart';
+import 'package:cat_project/Screens/LoginPage/Login_Screen.dart';
 import 'package:cat_project/Widgets/Exam/exam_commitment_dialog.dart';
-import 'package:cat_project/Page/Exam/exam_page.dart';
+import 'package:cat_project/Screens/Exam/exam_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
