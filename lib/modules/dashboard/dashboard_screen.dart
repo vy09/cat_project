@@ -100,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onStartExam: () => _startExam(exam),
                     ),
                   )
-                  .toList(),
+                  ,
             ],
           ),
         ),
