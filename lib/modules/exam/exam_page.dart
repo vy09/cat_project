@@ -3,6 +3,7 @@ import 'package:cat_project/modules/exam/widgets/exam_header_widget.dart';
 import 'package:cat_project/modules/exam/widgets/exam_question_widget.dart';
 import 'package:cat_project/modules/exam/widgets/exam_navigation_widget.dart';
 import 'package:cat_project/modules/exam/widgets/exam_navigation_drawer.dart';
+import 'package:cat_project/data/models/answer_model.dart';
 
 class ExamPage extends StatefulWidget {
   final String examTitle;
@@ -21,7 +22,8 @@ class ExamPage extends StatefulWidget {
 class _ExamPageState extends State<ExamPage> {
   int _currentQuestionIndex = 0;
   String? _selectedAnswer;
-  final Map<int, String> _answers = {};
+  final Map<int, AnswerModel> _answers = {};
+  final Set<int> _doubtfulQuestions = {};
 
   // Sample questions - should come from backend
   late final List<Map<String, dynamic>> _questions;
@@ -49,7 +51,12 @@ class _ExamPageState extends State<ExamPage> {
   void _selectAnswer(String answer) {
     setState(() {
       _selectedAnswer = answer;
-      _answers[_currentQuestionIndex] = answer;
+      _answers[_currentQuestionIndex] = AnswerModel(
+        questionId: _currentQuestionIndex.toString(),
+        answer: answer,
+        isDoubtful: _doubtfulQuestions.contains(_currentQuestionIndex),
+        answeredAt: DateTime.now(),
+      );
     });
   }
 
@@ -57,7 +64,7 @@ class _ExamPageState extends State<ExamPage> {
     if (_currentQuestionIndex < _questions.length - 1) {
       setState(() {
         _currentQuestionIndex++;
-        _selectedAnswer = _answers[_currentQuestionIndex];
+        _selectedAnswer = _answers[_currentQuestionIndex]?.answer;
       });
     }
   }
@@ -66,14 +73,19 @@ class _ExamPageState extends State<ExamPage> {
     if (_currentQuestionIndex > 0) {
       setState(() {
         _currentQuestionIndex--;
-        _selectedAnswer = _answers[_currentQuestionIndex];
+        _selectedAnswer = _answers[_currentQuestionIndex]?.answer;
       });
     }
   }
 
   void _saveAndContinue() {
     if (_selectedAnswer != null) {
-      _answers[_currentQuestionIndex] = _selectedAnswer!;
+      _answers[_currentQuestionIndex] = AnswerModel(
+        questionId: _currentQuestionIndex.toString(),
+        answer: _selectedAnswer!,
+        isDoubtful: _doubtfulQuestions.contains(_currentQuestionIndex),
+        answeredAt: DateTime.now(),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Jawaban disimpan'),
@@ -98,7 +110,25 @@ class _ExamPageState extends State<ExamPage> {
   void _goToQuestion(int index) {
     setState(() {
       _currentQuestionIndex = index;
-      _selectedAnswer = _answers[_currentQuestionIndex];
+      _selectedAnswer = _answers[_currentQuestionIndex]?.answer;
+    });
+  }
+
+  void _toggleDoubtful() {
+    setState(() {
+      if (_doubtfulQuestions.contains(_currentQuestionIndex)) {
+        _doubtfulQuestions.remove(_currentQuestionIndex);
+      } else {
+        _doubtfulQuestions.add(_currentQuestionIndex);
+      }
+
+      // Update existing answer if any
+      if (_answers[_currentQuestionIndex] != null) {
+        _answers[_currentQuestionIndex] = _answers[_currentQuestionIndex]!
+            .copyWith(
+              isDoubtful: _doubtfulQuestions.contains(_currentQuestionIndex),
+            );
+      }
     });
   }
 
@@ -112,6 +142,7 @@ class _ExamPageState extends State<ExamPage> {
         totalQuestions: _questions.length,
         currentQuestionIndex: _currentQuestionIndex,
         answers: _answers,
+        doubtfulQuestions: _doubtfulQuestions,
         onQuestionSelected: _goToQuestion,
       ),
       body: SafeArea(
@@ -151,6 +182,10 @@ class _ExamPageState extends State<ExamPage> {
                 ExamNavigationWidget(
                   onSaveAndContinue: _saveAndContinue,
                   onSkip: _skip,
+                  onToggleDoubtful: _toggleDoubtful,
+                  isDoubtful: _doubtfulQuestions.contains(
+                    _currentQuestionIndex,
+                  ),
                   canGoBack: _currentQuestionIndex > 0,
                   onGoBack: _previousQuestion,
                 ),

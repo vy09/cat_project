@@ -32,13 +32,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF6B7FED),
         elevation: 0,
-        title: const Text(
-          'COMPUTER ASSISTED TEST',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        centerTitle: false,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            return Text(
+              'COMPUTER ASSISTED TEST',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: screenWidth < 400
+                    ? 18
+                    : screenWidth < 600
+                    ? 22
+                    : 24,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
         actions: [
           Padding(

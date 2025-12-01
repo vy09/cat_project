@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cat_project/data/models/answer_model.dart';
 
 class ExamNavigationDrawer extends StatelessWidget {
   final int totalQuestions;
   final int currentQuestionIndex;
-  final Map<int, String> answers;
+  final Map<int, AnswerModel> answers;
+  final Set<int> doubtfulQuestions;
   final Function(int) onQuestionSelected;
 
   const ExamNavigationDrawer({
@@ -11,6 +13,7 @@ class ExamNavigationDrawer extends StatelessWidget {
     required this.totalQuestions,
     required this.currentQuestionIndex,
     required this.answers,
+    required this.doubtfulQuestions,
     required this.onQuestionSelected,
   });
 
@@ -81,11 +84,13 @@ class ExamNavigationDrawer extends StatelessWidget {
                     final questionNumber = index + 1;
                     final isCurrentQuestion = index == currentQuestionIndex;
                     final isAnswered = answers.containsKey(index);
+                    final isDoubtful = doubtfulQuestions.contains(index);
 
                     return _buildQuestionButton(
                       questionNumber: questionNumber,
                       isCurrentQuestion: isCurrentQuestion,
                       isAnswered: isAnswered,
+                      isDoubtful: isDoubtful,
                       onTap: () {
                         onQuestionSelected(index);
                         Navigator.of(context).pop();
@@ -105,13 +110,17 @@ class ExamNavigationDrawer extends StatelessWidget {
     required int questionNumber,
     required bool isCurrentQuestion,
     required bool isAnswered,
+    required bool isDoubtful,
     required VoidCallback onTap,
   }) {
     Color backgroundColor;
     Color textColor;
 
     if (isCurrentQuestion) {
-      backgroundColor = const Color(0xFFFFC107); // Yellow for current
+      backgroundColor = const Color(0xFF2196F3); // Blue for current
+      textColor = Colors.white;
+    } else if (isDoubtful) {
+      backgroundColor = const Color(0xFFFFC107); // Yellow for doubtful
       textColor = Colors.black87;
     } else if (isAnswered) {
       backgroundColor = const Color(0xFF4CAF50); // Green for answered
