@@ -61,231 +61,340 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenHeight < 700;
+    final isTablet = screenWidth > 600;
+    final isDesktop = screenWidth > 1024;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF6366F1), // Purple-blue background
+      backgroundColor: const Color(0xFF6366F1),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                // Logo BAPETEN
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktop
+                        ? constraints.maxWidth * 0.3
+                        : isTablet
+                        ? constraints.maxWidth * 0.2
+                        : screenWidth * 0.06,
                   ),
-                  padding: const EdgeInsets.all(8),
-                  child: Image.asset(
-                    'assets/images/logo/logo_bapeten.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Title
-                const Text(
-                  'UJIAN BERBASIS KOMPUTER',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'PETUGAS BIDANG KETENAGA NUKLIRAN',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                // Login Form Card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Login Title
-                        const Center(
-                          child: Text(
-                            'LOGIN',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: isSmallScreen ? 10 : 20),
+                      // Logo BAPETEN
+                      Container(
+                        width: isSmallScreen
+                            ? 80
+                            : isTablet
+                            ? 100
+                            : 90,
+                        height: isSmallScreen
+                            ? 80
+                            : isTablet
+                            ? 100
+                            : 90,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(6),
+                        child: Image.asset(
+                          'assets/images/logo/logo_bapeten.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      SizedBox(height: isSmallScreen ? 15 : 25),
+                      // Title
+                      Text(
+                        'UJIAN BERBASIS KOMPUTER',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          fontSize: isSmallScreen
+                              ? 14
+                              : isTablet
+                              ? 18
+                              : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: isSmallScreen ? 3 : 5),
+                      Text(
+                        'PETUGAS BIDANG KETENAGA NUKLIRAN',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          fontSize: isSmallScreen
+                              ? 13
+                              : isTablet
+                              ? 16
+                              : 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
+                      // Login Form Card
+                      Container(
+                        width: double.infinity,
+                        constraints: BoxConstraints(
+                          maxWidth: isDesktop
+                              ? 400
+                              : isTablet
+                              ? 500
+                              : double.infinity,
+                        ),
+                        padding: EdgeInsets.all(
+                          isSmallScreen
+                              ? 12
+                              : isTablet
+                              ? 20
+                              : 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 24 : 20,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Center(
-                          child: Text(
-                            'Hi Selamat datang kembali ke akun anda',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Email Field
-                        const Text(
-                          'Email',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: 'example@gmail.com',
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Email tidak boleh kosong';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Email tidak valid';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        // Password Field
-                        const Text(
-                          'Kata Sandi',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: !_isPasswordVisible,
-                          decoration: InputDecoration(
-                            hintText: '••••••••',
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.grey[600],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Password tidak boleh kosong';
-                            }
-                            if (value.length < 6) {
-                              return 'Password minimal 6 karakter';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        // Captcha Widget
-                        CaptchaWidget(
-                          onValidationChanged: _onCaptchaValidationChanged,
-                          onRefresh: _onCaptchaRefresh,
-                        ),
-                        const SizedBox(height: 4),
-                        // Remember Me Checkbox
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
-                              activeColor: const Color(0xFF6366F1),
-                            ),
-                            const Text(
-                              'Remember Me',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                              ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        // Login Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _handleLogin,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6366F1),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Login Title
+                              Center(
+                                child: Text(
+                                  'LOGIN',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen
+                                        ? 18
+                                        : isTablet
+                                        ? 24
+                                        : 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              'Masuk',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              SizedBox(height: isSmallScreen ? 2 : 4),
+                              Center(
+                                child: Text(
+                                  'Hi Selamat datang kembali ke akun anda',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen
+                                        ? 11
+                                        : isTablet
+                                        ? 14
+                                        : 12,
+                                    color: Colors.black87,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
+                              SizedBox(height: isSmallScreen ? 8 : 12),
+                              // Email Field
+                              Text(
+                                'Email',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen
+                                      ? 12
+                                      : isTablet
+                                      ? 15
+                                      : 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: isSmallScreen ? 3 : 4),
+                              TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  hintText: 'example@gmail.com',
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 18 : 14,
+                                    vertical: isSmallScreen
+                                        ? 8
+                                        : isTablet
+                                        ? 12
+                                        : 10,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email tidak boleh kosong';
+                                  }
+                                  if (!value.contains('@')) {
+                                    return 'Email tidak valid';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: isSmallScreen ? 8 : 12),
+                              // Password Field
+                              Text(
+                                'Kata Sandi',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen
+                                      ? 12
+                                      : isTablet
+                                      ? 15
+                                      : 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: isSmallScreen ? 3 : 4),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: !_isPasswordVisible,
+                                decoration: InputDecoration(
+                                  hintText: '••••••••',
+                                  filled: true,
+                                  fillColor: Colors.grey[200],
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 18 : 14,
+                                    vertical: isSmallScreen
+                                        ? 8
+                                        : isTablet
+                                        ? 12
+                                        : 10,
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _isPasswordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.grey[600],
+                                      size: isTablet ? 24 : 20,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isPasswordVisible =
+                                            !_isPasswordVisible;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password tidak boleh kosong';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password minimal 6 karakter';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: isSmallScreen ? 6 : 8),
+                              // Captcha Widget
+                              CaptchaWidget(
+                                onValidationChanged:
+                                    _onCaptchaValidationChanged,
+                                onRefresh: _onCaptchaRefresh,
+                              ),
+                              SizedBox(height: isSmallScreen ? 2 : 4),
+                              // Remember Me Checkbox
+                              Row(
+                                children: [
+                                  Transform.scale(
+                                    scale: isSmallScreen
+                                        ? 0.8
+                                        : isTablet
+                                        ? 1.1
+                                        : 0.9,
+                                    child: Checkbox(
+                                      value: _rememberMe,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _rememberMe = value ?? false;
+                                        });
+                                      },
+                                      activeColor: const Color(0xFF6366F1),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Remember Me',
+                                    style: TextStyle(
+                                      fontSize: isSmallScreen
+                                          ? 12
+                                          : isTablet
+                                          ? 16
+                                          : 13,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: isSmallScreen ? 8 : 12),
+                              // Login Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: _handleLogin,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6366F1),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: isSmallScreen
+                                          ? 12
+                                          : isTablet
+                                          ? 18
+                                          : 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        isTablet ? 16 : 12,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Masuk',
+                                    style: TextStyle(
+                                      fontSize: isSmallScreen
+                                          ? 14
+                                          : isTablet
+                                          ? 18
+                                          : 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: isSmallScreen ? 20 : 30),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 40),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

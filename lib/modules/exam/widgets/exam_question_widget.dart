@@ -16,6 +16,21 @@ class ExamQuestionWidget extends StatelessWidget {
     required this.onAnswerSelected,
   });
 
+  /// Clean HTML tags and format text for display
+  String _cleanHtmlText(String htmlText) {
+    return htmlText
+        .replaceAll('<br>', '\n')
+        .replaceAll('<br/>', '\n')
+        .replaceAll('<br />', '\n')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll(RegExp(r'<[^>]*>'), '') // Remove all HTML tags
+        .replaceAll(RegExp(r'\r\n|\r'), '\n') // Normalize line breaks
+        .trim();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,7 +61,7 @@ class ExamQuestionWidget extends StatelessWidget {
           const SizedBox(height: 16),
           // Question text
           Text(
-            questionText,
+            _cleanHtmlText(questionText),
             style: const TextStyle(
               fontSize: 14,
               color: Colors.black87,
@@ -85,11 +100,11 @@ class ExamQuestionWidget extends StatelessWidget {
           ),
         ),
         child: Text(
-          option,
+          _cleanHtmlText(option),
           style: TextStyle(
             fontSize: 14,
             color: isSelected ? const Color(0xFF6B7FED) : Colors.black87,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
           ),
         ),
       ),

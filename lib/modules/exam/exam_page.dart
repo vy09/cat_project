@@ -4,6 +4,8 @@ import 'package:cat_project/modules/exam/widgets/exam_question_widget.dart';
 import 'package:cat_project/modules/exam/widgets/exam_navigation_widget.dart';
 import 'package:cat_project/modules/exam/widgets/exam_navigation_drawer.dart';
 import 'package:cat_project/data/models/answer_model.dart';
+import 'package:cat_project/data/models/question_model.dart';
+import 'package:cat_project/core/services/exam_service.dart';
 
 class ExamPage extends StatefulWidget {
   final String examTitle;
@@ -25,27 +27,36 @@ class _ExamPageState extends State<ExamPage> {
   final Map<int, AnswerModel> _answers = {};
   final Set<int> _doubtfulQuestions = {};
 
-  // Sample questions - should come from backend
-  late final List<Map<String, dynamic>> _questions;
+  List<QuestionModel> _questions = [];
+  bool _isLoading = true;
+  String? _error;
+  final ExamService _examService = ExamService();
 
   @override
   void initState() {
     super.initState();
-    _questions = List.generate(
-      30,
-      (index) => {
-        'number': index + 1,
-        'text':
-            'Seorang radiografer melakukan pemeriksaan radiografi abdomen. Ketika berkas primer sinar-X berinteraksi dengan jaringan tubuh, terjadi beberapa proses selama attenuasi berkas sinar-X. Citra radiografi abdomen menunjukkan densitas rendah.\n\nApakah proses yang terjadi selama attenuasi sinar-X pada citra radiografi tersebut?',
-        'options': [
-          'A. Absorsi foton-foton datang sinar-X',
-          'B. Refraksi foton-foton datang sinar-X',
-          'C. Refleksi foton-foton datang sinar-X',
-          'D. Scatter foton-foton datang sinar-X',
-          'E. Transmisi foton-foton datang sinar-X',
-        ],
-      },
-    );
+    _loadQuestions();
+  }
+
+  Future<void> _loadQuestions() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      final questions = await _examService.loadExamQuestions();
+
+      setState(() {
+        _questions = questions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   void _selectAnswer(String answer) {
@@ -134,65 +145,113 @@ class _ExamPageState extends State<ExamPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentQuestion = _questions[_currentQuestionIndex];
-
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      endDrawer: ExamNavigationDrawer(
-        totalQuestions: _questions.length,
-        currentQuestionIndex: _currentQuestionIndex,
-        answers: _answers,
-        doubtfulQuestions: _doubtfulQuestions,
-        onQuestionSelected: _goToQuestion,
-      ),
+      endDrawer: _questions.isNotEmpty
+          ? ExamNavigationDrawer(
+              totalQuestions: _questions.length,
+              currentQuestionIndex: _currentQuestionIndex,
+              answers: _answers,
+              doubtfulQuestions: _doubtfulQuestions,
+              onQuestionSelected: _goToQuestion,
+            )
+          : null,
       body: SafeArea(
-        child: Builder(
-          builder: (BuildContext context) {
-            return Column(
-              children: [
-                // Header
-                ExamHeaderWidget(
-                  examTitle: widget.examTitle,
-                  examSubtitle: widget.examSubtitle,
-                  remainingTime: const Duration(
-                    hours: 1,
-                    minutes: 59,
-                    seconds: 59,
-                  ),
-                  onMenuPressed: () {
-                    Scaffold.of(context).openEndDrawer();
-                  },
-                ),
-
-                // Question Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: ExamQuestionWidget(
-                      questionNumber: currentQuestion['number'],
-                      questionText: currentQuestion['text'],
-                      options: List<String>.from(currentQuestion['options']),
-                      selectedAnswer: _selectedAnswer,
-                      onAnswerSelected: _selectAnswer,
+        child: _isLoading
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text(
+                      'Memuat soal ujian...',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                  ),
+                  ],
                 ),
+              )
+            : _error != null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Gagal memuat soal ujian',
+                      style: TextStyle(fontSize: 18, color: Colors.red[700]),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _error!,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadQuestions,
+                      child: const Text('Coba Lagi'),
+                    ),
+                  ],
+                ),
+              )
+            : _questions.isEmpty
+            ? const Center(
+                child: Text(
+                  'Tidak ada soal yang tersedia',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              )
+            : Builder(
+                builder: (BuildContext context) {
+                  final currentQuestion = _questions[_currentQuestionIndex];
 
-                // Navigation Buttons
-                ExamNavigationWidget(
-                  onSaveAndContinue: _saveAndContinue,
-                  onSkip: _skip,
-                  onToggleDoubtful: _toggleDoubtful,
-                  isDoubtful: _doubtfulQuestions.contains(
-                    _currentQuestionIndex,
-                  ),
-                  canGoBack: _currentQuestionIndex > 0,
-                  onGoBack: _previousQuestion,
-                ),
-              ],
-            );
-          },
-        ),
+                  return Column(
+                    children: [
+                      // Header
+                      ExamHeaderWidget(
+                        examTitle: widget.examTitle,
+                        examSubtitle: widget.examSubtitle,
+                        remainingTime: const Duration(
+                          hours: 1,
+                          minutes: 59,
+                          seconds: 59,
+                        ),
+                        onMenuPressed: () {
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                      ),
+
+                      // Question Content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: ExamQuestionWidget(
+                            questionNumber: currentQuestion.questionNumber,
+                            questionText: currentQuestion.soal,
+                            options: currentQuestion.options,
+                            selectedAnswer: _selectedAnswer,
+                            onAnswerSelected: _selectAnswer,
+                          ),
+                        ),
+                      ),
+
+                      // Navigation Buttons
+                      ExamNavigationWidget(
+                        onSaveAndContinue: _saveAndContinue,
+                        onSkip: _skip,
+                        onToggleDoubtful: _toggleDoubtful,
+                        isDoubtful: _doubtfulQuestions.contains(
+                          _currentQuestionIndex,
+                        ),
+                        canGoBack: _currentQuestionIndex > 0,
+                        onGoBack: _previousQuestion,
+                      ),
+                    ],
+                  );
+                },
+              ),
       ),
     );
   }
