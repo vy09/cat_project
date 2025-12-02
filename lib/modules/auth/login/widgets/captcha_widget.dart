@@ -112,8 +112,8 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
 
         // Captcha Display
         Container(
-          height: 80,
-          padding: const EdgeInsets.all(16),
+          height: 55,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Colors.grey[200],
             borderRadius: BorderRadius.circular(12),
@@ -134,7 +134,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                         child: Text(
                           _captchaText,
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[800],
                             letterSpacing: 4,
@@ -161,7 +161,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
         // Input Field
         TextFormField(

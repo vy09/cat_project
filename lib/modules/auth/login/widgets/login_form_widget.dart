@@ -24,8 +24,11 @@ class LoginFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -40,31 +43,31 @@ class LoginFormWidget extends StatelessWidget {
               child: Text(
                 'LOGIN',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.005),
             const Center(
               child: Text(
                 'Hi Selamat datang kembali ke akun anda',
-                style: TextStyle(fontSize: 13, color: Colors.black87),
+                style: TextStyle(fontSize: 12, color: Colors.black87),
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: screenHeight * 0.01),
             // Email Field
             const Text(
               'Email',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.003),
             TextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
@@ -76,9 +79,9 @@ class LoginFormWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.04,
+                  vertical: screenHeight * 0.012,
                 ),
               ),
               validator: (value) {
@@ -91,17 +94,17 @@ class LoginFormWidget extends StatelessWidget {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: screenHeight * 0.01),
             // Password Field
             const Text(
               'Kata Sandi',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.003),
             TextFormField(
               controller: passwordController,
               obscureText: !isPasswordVisible,
@@ -113,9 +116,9 @@ class LoginFormWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.03,
+                  vertical: screenHeight * 0.012,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -135,22 +138,25 @@ class LoginFormWidget extends StatelessWidget {
                 return null;
               },
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: screenHeight * 0.005),
             // Remember Me Checkbox
             Row(
               children: [
-                Checkbox(
-                  value: rememberMe,
-                  onChanged: onRememberMeChanged,
-                  activeColor: const Color(0xFF6366F1),
+                Transform.scale(
+                  scale: 0.8,
+                  child: Checkbox(
+                    value: rememberMe,
+                    onChanged: onRememberMeChanged,
+                    activeColor: const Color(0xFF6366F1),
+                  ),
                 ),
                 const Text(
                   'Remember Me',
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                  style: TextStyle(fontSize: 13, color: Colors.black87),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: screenHeight * 0.01),
             // Login Button
             SizedBox(
               width: double.infinity,
@@ -158,7 +164,7 @@ class LoginFormWidget extends StatelessWidget {
                 onPressed: onLogin,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.012),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -166,7 +172,7 @@ class LoginFormWidget extends StatelessWidget {
                 child: const Text(
                   'Masuk',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
