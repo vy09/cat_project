@@ -118,6 +118,72 @@ class _ExamPageState extends State<ExamPage> {
     _nextQuestion();
   }
 
+  void _finishExam() {
+    // Show confirmation dialog before finishing exam
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Selesaikan Ujian?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Apakah Anda yakin ingin menyelesaikan ujian?'),
+              const SizedBox(height: 12),
+              Text(
+                'Total soal: ${_questions.length}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              Text(
+                'Soal terjawab: ${_answers.length}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              Text(
+                'Soal ragu-ragu: ${_doubtfulQuestions.length}',
+                style: const TextStyle(fontSize: 14, color: Colors.orange),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _submitExam();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF5722),
+              ),
+              child: const Text(
+                'Ya, Selesaikan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _submitExam() {
+    // Handle exam submission logic here
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Ujian berhasil diselesaikan!'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    // Navigate back to dashboard or results page
+    Navigator.of(context).pop();
+  }
+
   void _goToQuestion(int index) {
     setState(() {
       _currentQuestionIndex = index;
@@ -242,11 +308,14 @@ class _ExamPageState extends State<ExamPage> {
                         onSaveAndContinue: _saveAndContinue,
                         onSkip: _skip,
                         onToggleDoubtful: _toggleDoubtful,
+                        onFinishExam: _finishExam,
                         isDoubtful: _doubtfulQuestions.contains(
                           _currentQuestionIndex,
                         ),
                         canGoBack: _currentQuestionIndex > 0,
                         onGoBack: _previousQuestion,
+                        isLastQuestion:
+                            _currentQuestionIndex == _questions.length - 1,
                       ),
                     ],
                   );

@@ -4,8 +4,10 @@ class ExamNavigationWidget extends StatelessWidget {
   final VoidCallback onSaveAndContinue;
   final VoidCallback onSkip;
   final VoidCallback onToggleDoubtful;
+  final VoidCallback? onFinishExam;
   final bool isDoubtful;
   final bool canGoBack;
+  final bool isLastQuestion;
   final VoidCallback? onGoBack;
 
   const ExamNavigationWidget({
@@ -16,6 +18,8 @@ class ExamNavigationWidget extends StatelessWidget {
     required this.isDoubtful,
     this.canGoBack = false,
     this.onGoBack,
+    this.isLastQuestion = false,
+    this.onFinishExam,
   });
 
   @override
@@ -34,7 +38,7 @@ class ExamNavigationWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Save and Continue button
+          // Save button (or Save and Continue if not last question)
           Expanded(
             child: ElevatedButton(
               onPressed: onSaveAndContinue,
@@ -84,21 +88,23 @@ class ExamNavigationWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          // Skip button
+          // Conditional button: Finish or Skip
           Expanded(
             child: ElevatedButton(
-              onPressed: onSkip,
+              onPressed: isLastQuestion ? onFinishExam : onSkip,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B7FED),
+                backgroundColor: isLastQuestion
+                    ? const Color(0xFFFF5722) // Orange for finish
+                    : const Color(0xFF6B7FED), // Blue for skip
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                'Lewati',
-                style: TextStyle(
+              child: Text(
+                isLastQuestion ? 'Selesai' : 'Lewati',
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
