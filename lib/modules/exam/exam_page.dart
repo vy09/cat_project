@@ -114,11 +114,16 @@ class _ExamPageState extends State<ExamPage> {
       );
       _nextQuestion();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Silakan pilih jawaban terlebih dahulu'),
-          backgroundColor: Colors.orange,
-        ),
+      // Show popup notification for no answer selected
+      _showWarningPopup(
+        title: 'Silakan Pilih Jawaban',
+        message:
+            'Anda belum memilih jawaban untuk soal ini. Silakan pilih salah satu jawaban terlebih dahulu.',
+        icon: Icons.edit_note_rounded,
+        iconColor: const Color(0xFF6B7FED),
+        showCancelButton: false,
+        confirmText: 'OK, Mengerti',
+        onConfirm: () {},
       );
     }
   }
@@ -128,6 +133,12 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   void _finishExam() {
+    // Calculate unanswered questions
+    final int totalQuestions = _questions.length;
+    final int answeredCount = _answers.length;
+    final int unansweredCount = totalQuestions - answeredCount;
+    final int doubtfulCount = _doubtfulQuestions.length;
+
     // Show confirmation dialog before finishing exam
     showDialog(
       context: context,
@@ -142,17 +153,23 @@ class _ExamPageState extends State<ExamPage> {
               const Text('Apakah Anda yakin ingin menyelesaikan ujian?'),
               const SizedBox(height: 12),
               Text(
-                'Total soal: ${_questions.length}',
+                'Total soal: $totalQuestions',
                 style: const TextStyle(fontSize: 14),
               ),
               Text(
-                'Soal terjawab: ${_answers.length}',
-                style: const TextStyle(fontSize: 14),
+                'Soal terjawab: $answeredCount',
+                style: const TextStyle(fontSize: 14, color: Colors.green),
               ),
-              Text(
-                'Soal ragu-ragu: ${_doubtfulQuestions.length}',
-                style: const TextStyle(fontSize: 14, color: Colors.orange),
-              ),
+              if (unansweredCount > 0)
+                Text(
+                  'Soal belum dijawab: $unansweredCount',
+                  style: const TextStyle(fontSize: 14, color: Colors.red),
+                ),
+              if (doubtfulCount > 0)
+                Text(
+                  'Soal ragu-ragu: $doubtfulCount',
+                  style: const TextStyle(fontSize: 14, color: Colors.orange),
+                ),
             ],
           ),
           actions: [
@@ -180,20 +197,156 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   void _submitExam() {
-    // Handle exam submission logic here
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Ujian berhasil diselesaikan!'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
+    // Calculate results
+    final int totalQuestions = _questions.length;
+    final int answeredCount = _answers.length;
+    final int unansweredCount = totalQuestions - answeredCount;
 
-    // Navigate back to dashboard or results page
-    Navigator.of(context).pop();
+    // Show success popup notification
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF7B8EF7), Color(0xFF6B7FED)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Checkmark icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                // Title
+                const Text(
+                  'Ujian Telah Selesai!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                // Summary
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildResultRow('Total Soal', '$totalQuestions'),
+                      const SizedBox(height: 8),
+                      _buildResultRow(
+                        'Terjawab',
+                        '$answeredCount',
+                        Colors.greenAccent,
+                      ),
+                      if (unansweredCount > 0) ...[
+                        const SizedBox(height: 8),
+                        _buildResultRow(
+                          'Belum Dijawab',
+                          '$unansweredCount',
+                          Colors.redAccent,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // OK Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(); // Go back to previous screen
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF6B7FED),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildResultRow(String label, String value, [Color? valueColor]) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: Colors.white70),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: valueColor ?? Colors.white,
+          ),
+        ),
+      ],
+    );
   }
 
   void _toggleDoubtful() {
+    // Check if no answer selected when marking as doubtful
+    if (!_doubtfulQuestions.contains(_currentQuestionIndex) &&
+        _selectedAnswer == null) {
+      // Show warning popup
+      _showWarningPopup(
+        title: 'Belum Ada Jawaban',
+        message:
+            'Anda belum memilih jawaban untuk soal ini. Apakah tetap ingin menandai sebagai ragu-ragu?',
+        icon: Icons.warning_amber_rounded,
+        iconColor: Colors.orange,
+        onConfirm: () {
+          setState(() {
+            _doubtfulQuestions.add(_currentQuestionIndex);
+          });
+        },
+      );
+      return;
+    }
+
     setState(() {
       if (_doubtfulQuestions.contains(_currentQuestionIndex)) {
         _doubtfulQuestions.remove(_currentQuestionIndex);
@@ -209,6 +362,160 @@ class _ExamPageState extends State<ExamPage> {
             );
       }
     });
+  }
+
+  void _showWarningPopup({
+    required String title,
+    required String message,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onConfirm,
+    bool showCancelButton = true,
+    String confirmText = 'Ya, Lanjutkan',
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  iconColor.withOpacity(0.9),
+                  iconColor.withOpacity(0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Warning icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 50, color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                // Title
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                // Message
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.9),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                // Buttons
+                if (showCancelButton)
+                  Row(
+                    children: [
+                      // Cancel button
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Batal',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Confirm button
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            onConfirm();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: iconColor,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            confirmText,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  // Single OK button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        onConfirm();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: iconColor,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        confirmText,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
