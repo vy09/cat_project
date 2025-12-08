@@ -89,6 +89,15 @@ class _ExamPageState extends State<ExamPage> {
     }
   }
 
+  void _goToQuestion(int index) {
+    if (index >= 0 && index < _questions.length) {
+      setState(() {
+        _currentQuestionIndex = index;
+        _selectedAnswer = _answers[_currentQuestionIndex]?.answer;
+      });
+    }
+  }
+
   void _saveAndContinue() {
     if (_selectedAnswer != null) {
       _answers[_currentQuestionIndex] = AnswerModel(
@@ -182,13 +191,6 @@ class _ExamPageState extends State<ExamPage> {
 
     // Navigate back to dashboard or results page
     Navigator.of(context).pop();
-  }
-
-  void _goToQuestion(int index) {
-    setState(() {
-      _currentQuestionIndex = index;
-      _selectedAnswer = _answers[_currentQuestionIndex]?.answer;
-    });
   }
 
   void _toggleDoubtful() {
@@ -316,6 +318,9 @@ class _ExamPageState extends State<ExamPage> {
                         onGoBack: _previousQuestion,
                         isLastQuestion:
                             _currentQuestionIndex == _questions.length - 1,
+                        currentQuestion: _currentQuestionIndex + 1,
+                        totalQuestions: _questions.length,
+                        onGoToQuestion: _goToQuestion,
                       ),
                     ],
                   );
