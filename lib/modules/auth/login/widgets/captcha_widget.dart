@@ -23,8 +23,13 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
   bool _initialized = false;
   int _failedAttempts = 0;
 
-  // Characters for captcha (excluding similar looking ones like 0/O, 1/I/l)
-  static const String _captchaChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  // Characters for captcha: uppercase, lowercase, and numbers
+  // Excluding similar looking ones like 0/O, 1/I/l
+  static const String _upperChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  static const String _lowerChars = 'abcdefghjkmnpqrstuvwxyz';
+  static const String _numberChars = '23456789';
+  static const String _captchaChars =
+      'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
 
   @override
   void initState() {
@@ -46,13 +51,25 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
     super.dispose();
   }
 
-  // Generate random alphanumeric captcha
+  // Generate random alphanumeric captcha with mixed case
   String _generateRandomCaptcha({int length = 6}) {
     final random = Random();
-    return List.generate(
-      length,
-      (_) => _captchaChars[random.nextInt(_captchaChars.length)],
-    ).join();
+    final result = <String>[];
+
+    // Ensure at least one uppercase, one lowercase, and one number
+    result.add(_upperChars[random.nextInt(_upperChars.length)]);
+    result.add(_lowerChars[random.nextInt(_lowerChars.length)]);
+    result.add(_numberChars[random.nextInt(_numberChars.length)]);
+
+    // Fill remaining with random characters from all types
+    for (int i = 3; i < length; i++) {
+      result.add(_captchaChars[random.nextInt(_captchaChars.length)]);
+    }
+
+    // Shuffle the characters
+    result.shuffle(random);
+
+    return result.join();
   }
 
   void _generateNewCaptcha() {
@@ -70,7 +87,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
   }
 
   void _validateInput() {
-    final input = _textController.text.toUpperCase();
+    final input = _textController.text; // Case-sensitive validation
     final newIsValid = input == _currentCaptcha;
 
     if (_isValid != newIsValid) {
@@ -256,7 +273,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
     return TextFormField(
       controller: _textController,
       keyboardType: TextInputType.text,
-      textCapitalization: TextCapitalization.characters,
+      textCapitalization: TextCapitalization.none, // Case-sensitive input
       maxLength: 6,
       style: const TextStyle(
         letterSpacing: 8,
@@ -265,10 +282,10 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
       ),
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-        hintText: 'Masukkan kode',
+        hintText: 'Masukkan kode (case-sensitive)',
         hintStyle: TextStyle(
           letterSpacing: 1,
-          fontSize: 14,
+          fontSize: 12,
           color: Colors.grey.shade500,
         ),
         counterText: '',
