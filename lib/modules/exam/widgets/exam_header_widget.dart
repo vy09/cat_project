@@ -6,6 +6,7 @@ class ExamHeaderWidget extends StatefulWidget {
   final String examSubtitle;
   final Duration remainingTime;
   final VoidCallback onMenuPressed;
+  final VoidCallback? onTimeUp;
 
   const ExamHeaderWidget({
     super.key,
@@ -13,6 +14,7 @@ class ExamHeaderWidget extends StatefulWidget {
     required this.examSubtitle,
     required this.remainingTime,
     required this.onMenuPressed,
+    this.onTimeUp,
   });
 
   @override
@@ -38,7 +40,8 @@ class _ExamHeaderWidgetState extends State<ExamHeaderWidget> {
         });
       } else {
         timer.cancel();
-        // Handle time's up
+        // Handle time's up - call callback
+        widget.onTimeUp?.call();
       }
     });
   }

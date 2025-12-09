@@ -197,16 +197,162 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   void _submitExam() {
+    _saveAllAnswersAndFinish(isTimeUp: false);
+  }
+
+  void _onTimeUp() {
+    // Auto-save all answers when time is up
+    _saveAllAnswersAndFinish(isTimeUp: true);
+  }
+
+  void _saveAllAnswersAndFinish({required bool isTimeUp}) {
+    // Save current answer if selected
+    if (_selectedAnswer != null &&
+        !_answers.containsKey(_currentQuestionIndex)) {
+      _answers[_currentQuestionIndex] = AnswerModel(
+        questionId: _currentQuestionIndex.toString(),
+        answer: _selectedAnswer!,
+        isDoubtful: _doubtfulQuestions.contains(_currentQuestionIndex),
+        answeredAt: DateTime.now(),
+      );
+    }
+
     // Calculate results
     final int totalQuestions = _questions.length;
     final int answeredCount = _answers.length;
     final int unansweredCount = totalQuestions - answeredCount;
 
-    // Show success popup notification
+    // TODO: Save answers to database/API here
+    // Example: await _examService.saveAnswers(_answers);
+    debugPrint('=== EXAM FINISHED ===');
+    debugPrint('Time Up: $isTimeUp');
+    debugPrint('Total Questions: $totalQuestions');
+    debugPrint('Answered: $answeredCount');
+    debugPrint('Unanswered: $unansweredCount');
+    debugPrint('Answers: $_answers');
+    debugPrint('=====================');
+
+    // If time is up, show popup briefly then auto-close and go to dashboard
+    if (isTimeUp) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          // Auto close dialog after 3 seconds and go to dashboard
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted && Navigator.of(dialogContext).canPop()) {
+              Navigator.of(dialogContext).pop();
+              if (mounted && Navigator.of(context).canPop()) {
+                Navigator.of(context).pop(); // Go back to dashboard
+              }
+            }
+          });
+
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFFF6B6B), Color(0xFFEE5A5A)],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Timer off icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.timer_off,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Title
+                  const Text(
+                    'Waktu Habis!',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  // Message
+                  Text(
+                    'Jawaban Anda telah tersimpan secara otomatis',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  // Summary
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildResultRow('Total Soal', '$totalQuestions'),
+                        const SizedBox(height: 8),
+                        _buildResultRow(
+                          'Terjawab',
+                          '$answeredCount',
+                          Colors.greenAccent,
+                        ),
+                        if (unansweredCount > 0) ...[
+                          const SizedBox(height: 8),
+                          _buildResultRow(
+                            'Belum Dijawab',
+                            '$unansweredCount',
+                            Colors.yellowAccent,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Auto close message
+                  Text(
+                    'Otomatis kembali ke dashboard dalam 3 detik...',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.7),
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+      return;
+    }
+
+    // Normal finish - show popup with OK button
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -279,8 +425,8 @@ class _ExamPageState extends State<ExamPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop(); // Go back to previous screen
+                      Navigator.of(dialogContext).pop();
+                      Navigator.of(context).pop(); // Go back to dashboard
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -291,7 +437,7 @@ class _ExamPageState extends State<ExamPage> {
                       ),
                     ),
                     child: const Text(
-                      'OK',
+                      'Kembali ke Dashboard',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -589,13 +735,14 @@ class _ExamPageState extends State<ExamPage> {
                         examTitle: widget.examTitle,
                         examSubtitle: widget.examSubtitle,
                         remainingTime: const Duration(
-                          hours: 1,
-                          minutes: 59,
-                          seconds: 59,
+                          hours: 0,
+                          minutes: 1,
+                          seconds: 0,
                         ),
                         onMenuPressed: () {
                           Scaffold.of(context).openEndDrawer();
                         },
+                        onTimeUp: _onTimeUp,
                       ),
 
                       // Question Content
