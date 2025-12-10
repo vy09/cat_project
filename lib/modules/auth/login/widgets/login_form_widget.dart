@@ -60,7 +60,7 @@ class LoginFormWidget extends StatelessWidget {
             SizedBox(height: screenHeight * 0.01),
             // Email Field
             const Text(
-              'Email',
+              'Username',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -72,7 +72,7 @@ class LoginFormWidget extends StatelessWidget {
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                hintText: 'example@gmail.com',
+                hintText: 'Username Anda',
                 filled: true,
                 fillColor: Colors.grey[200],
                 border: OutlineInputBorder(
@@ -86,10 +86,7 @@ class LoginFormWidget extends StatelessWidget {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Email tidak boleh kosong';
-                }
-                if (!value.contains('@')) {
-                  return 'Email tidak valid';
+                  return 'Username tidak boleh kosong';
                 }
                 return null;
               },

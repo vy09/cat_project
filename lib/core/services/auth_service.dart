@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
-import 'api_client.dart';
 import 'package:cat_project/modules/dashboard/dashboard_screen.dart';
 
 class AuthService {
-  final ApiClient _apiClient = ApiClient();
+  final String baseUrl = dotenv.env['API_URL']!;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Singleton pattern
@@ -79,32 +80,57 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // Send plain password - backend will handle hashing and verification
-      final response = await _apiClient.post('/auth/login', {
-        'username': username,
-        'password': password,
-      }, includeAuth: false);
+      final url = Uri.parse('$baseUrl/generateToken');
+      final body = {'username': username, 'password': password};
 
-      if (response.success) {
+      // Send plain password - backend will handle hashing and verification
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      final data = jsonDecode(response.body);
+
+      // Check if response status is 200 (success)
+      if (data['status'] == 200) {
+        // Data ada di dalam "response" key
+        final responseData = data['response'];
+
         // Save token securely
-        final token = response.data['token'] ?? '';
+        final token = responseData['token'] ?? '';
         if (token.isNotEmpty) {
           await _storage.write(key: 'auth_token', value: token);
         }
 
-        // Save user data
-        final userData = response.data['user'];
-        if (userData != null) {
-          await _storage.write(key: 'user_data', value: jsonEncode(userData));
+        // Save username
+        if (responseData['username'] != null) {
+          await _storage.write(
+            key: 'username',
+            value: responseData['username'],
+          );
         }
+
+        // Save nama
+        if (responseData['nama'] != null) {
+          await _storage.write(key: 'nama', value: responseData['nama']);
+        }
+
+        // Save all user data as JSON
+        await _storage.write(key: 'user_data', value: jsonEncode(responseData));
 
         return AuthResult(
           success: true,
-          message: response.message,
-          user: userData,
+          message: 'Login berhasil',
+          user: responseData,
         );
       } else {
-        return AuthResult(success: false, message: response.message);
+        // Login failed - ambil message dari "keterangan"
+        final message = data['keterangan'] ?? 'Login gagal';
+        return AuthResult(success: false, message: message);
       }
     } catch (e) {
       return AuthResult(success: false, message: 'Login failed: $e');
@@ -114,11 +140,6 @@ class AuthService {
   /// Handle user logout
   Future<void> logout(BuildContext context) async {
     try {
-      // Call logout API endpoint
-      await _apiClient.post('/auth/logout', {});
-    } catch (e) {
-      // Continue with local logout even if API call fails
-    } finally {
       // Clear all stored data
       await _storage.deleteAll();
 
@@ -127,6 +148,16 @@ class AuthService {
           const SnackBar(
             content: Text('Logout berhasil'),
             backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout error: $e'),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -153,36 +184,14 @@ class AuthService {
     return null;
   }
 
-  /// Refresh auth token
-  Future<bool> refreshToken() async {
-    try {
-      final response = await _apiClient.post('/auth/refresh', {});
-
-      if (response.success) {
-        final newToken = response.data['token'];
-        if (newToken != null) {
-          await _storage.write(key: 'auth_token', value: newToken);
-          return true;
-        }
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
+  /// Get username
+  Future<String?> getUsername() async {
+    return await _storage.read(key: 'username');
   }
 
-  /// Validate token expiration (if you have JWT)
-  Future<bool> isTokenValid() async {
-    final token = await getToken();
-    if (token == null) return false;
-
-    try {
-      // Simple validation - you can implement JWT decode if needed
-      // For now, just check if token exists
-      return token.isNotEmpty;
-    } catch (e) {
-      return false;
-    }
+  /// Get nama
+  Future<String?> getNama() async {
+    return await _storage.read(key: 'nama');
   }
 }
 

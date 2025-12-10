@@ -1,7 +1,6 @@
 class ApiConstants {
-  static const String baseUrl = 'https://api.example.com';
+  // static const String baseUrl = 'https://dev-spl25.bapeten.go.id/lv/public/api';
   static const String loginEndpoint = '/auth/login';
-  static const String registerEndpoint = '/auth/register';
   static const String examsEndpoint = '/exams';
   static const String questionsEndpoint = '/questions';
   static const String submitAnswerEndpoint = '/answers';
