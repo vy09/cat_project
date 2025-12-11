@@ -58,9 +58,9 @@ class LoginFormWidget extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-            // Email Field
+            // Email/Username Field
             const Text(
-              'Username',
+              'Email / Username',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -70,9 +70,9 @@ class LoginFormWidget extends StatelessWidget {
             SizedBox(height: screenHeight * 0.003),
             TextFormField(
               controller: emailController,
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(
-                hintText: 'Username Anda',
+                hintText: 'Masukkan email atau username',
                 filled: true,
                 fillColor: Colors.grey[200],
                 border: OutlineInputBorder(
@@ -86,7 +86,7 @@ class LoginFormWidget extends StatelessWidget {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Username tidak boleh kosong';
+                  return 'Email atau username tidak boleh kosong';
                 }
                 return null;
               },

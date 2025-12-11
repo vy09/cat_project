@@ -15,9 +15,12 @@ class AuthService {
   AuthService._internal();
 
   /// Handle user login with UI navigation
+  /// [username] can be email or username
+  /// [password] user password
+  /// [rememberMe] whether to remember login session
   Future<void> login(
     BuildContext context,
-    String email,
+    String username,
     String password,
     bool rememberMe,
   ) async {
@@ -34,7 +37,7 @@ class AuthService {
 
     try {
       // Call API login
-      final result = await loginApi(username: email, password: password);
+      final result = await loginApi(username: username, password: password);
 
       // Close loading dialog
       if (context.mounted) {
@@ -75,6 +78,8 @@ class AuthService {
   }
 
   /// API-based login (without UI)
+  /// [username] accepts both email and username format
+  /// [password] plain password - backend handles hashing
   Future<AuthResult> loginApi({
     required String username,
     required String password,
@@ -112,6 +117,11 @@ class AuthService {
             key: 'username',
             value: responseData['username'],
           );
+        }
+
+        // Save email
+        if (responseData['email'] != null) {
+          await _storage.write(key: 'email', value: responseData['email']);
         }
 
         // Save nama
@@ -187,6 +197,11 @@ class AuthService {
   /// Get username
   Future<String?> getUsername() async {
     return await _storage.read(key: 'username');
+  }
+
+  /// Get email
+  Future<String?> getEmail() async {
+    return await _storage.read(key: 'email');
   }
 
   /// Get nama

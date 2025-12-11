@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
   final _captchaService = CaptchaService();
@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate() && _isCaptchaValid) {
       _authService.login(
         context,
-        _emailController.text,
+        _usernameController.text,
         _passwordController.text,
         _rememberMe,
       );
@@ -65,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenHeight < 700;
     final isTablet = screenWidth > 600;
-    final isDesktop = screenWidth > 1024;
 
     return Scaffold(
       backgroundColor: const Color(0xFF6366F1),
@@ -77,9 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop
-                        ? constraints.maxWidth * 0.3
-                        : isTablet
+                    horizontal: isTablet
                         ? constraints.maxWidth * 0.2
                         : screenWidth * 0.06,
                   ),
@@ -143,11 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         width: double.infinity,
                         constraints: BoxConstraints(
-                          maxWidth: isDesktop
-                              ? 400
-                              : isTablet
-                              ? 500
-                              : double.infinity,
+                          maxWidth: isTablet ? 500 : double.infinity,
                         ),
                         padding: EdgeInsets.all(
                           isSmallScreen
@@ -205,9 +198,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               SizedBox(height: isSmallScreen ? 8 : 12),
-                              // Email Field
+                              // Email/Username Field
                               Text(
-                                'Email',
+                                'Email / Username',
                                 style: TextStyle(
                                   fontSize: isSmallScreen
                                       ? 12
@@ -220,10 +213,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               SizedBox(height: isSmallScreen ? 3 : 4),
                               TextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
+                                controller: _usernameController,
+                                keyboardType: TextInputType.text,
                                 decoration: InputDecoration(
-                                  hintText: 'example@gmail.com',
+                                  hintText: 'Masukkan email atau username',
                                   filled: true,
                                   fillColor: Colors.grey[200],
                                   border: OutlineInputBorder(
@@ -241,10 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Email tidak boleh kosong';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Email tidak valid';
+                                    return 'Email atau username tidak boleh kosong';
                                   }
                                   return null;
                                 },

@@ -1,5 +1,4 @@
 class ApiConstants {
-  
   static const String loginEndpoint = '/auth/login';
   static const String examsEndpoint = '/exams';
   static const String questionsEndpoint = '/questions';
